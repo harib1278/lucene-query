@@ -1,0 +1,137 @@
+{
+    "size": 0,
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "query_string": {
+                        "query": "status: 502",
+                        "default_field": "*",
+                        "fields": [],
+                        "type": "best_fields",
+                        "default_operator": "or",
+                        "max_determinized_states": 10000,
+                        "enable_position_increments": true,
+                        "fuzziness": "AUTO",
+                        "fuzzy_prefix_length": 0,
+                        "fuzzy_max_expansions": 50,
+                        "phrase_slop": 0,
+                        "analyze_wildcard": true,
+                        "escape": false,
+                        "auto_generate_synonyms_phrase_query": true,
+                        "fuzzy_transpositions": true,
+                        "boost": 1
+                    }
+                },
+                {
+                    "range": {
+                        "@timestamp": {
+                            "from": "now-10m",
+                            "to": "now",
+                            "include_lower": true,
+                            "include_upper": true,
+                            "time_zone": "+02:00",
+                            "boost": 1
+                        }
+                    }
+                }
+            ],
+            "must_not": [
+                {
+                    "match_phrase": {
+                        "user_agent": {
+                            "query": "Python-urllib/2.7",
+                            "slop": 0,
+                            "zero_terms_query": "NONE",
+                            "boost": 1
+                        }
+                    }
+                },
+                {
+                    "match_phrase": {
+                        "user_agent": {
+                            "query": "Amazon CloudFront",
+                            "slop": 0,
+                            "zero_terms_query": "NONE",
+                            "boost": 1
+                        }
+                    }
+                },
+                {
+                    "match_phrase": {
+                        "user_agent": {
+                            "query": "ELB-HealthChecker/2.0",
+                            "slop": 0,
+                            "zero_terms_query": "NONE",
+                            "boost": 1
+                        }
+                    }
+                },
+                {
+                    "match_phrase": {
+                        "user_agent": {
+                            "query": "Amazon-Route53-Health-Check-Service",
+                            "slop": 0,
+                            "zero_terms_query": "NONE",
+                            "boost": 1
+                        }
+                    }
+                },
+                {
+                    "wildcard": {
+                        "user_agent": {
+                            "wildcard": "*bot*",
+                            "boost": 1
+                        }
+                    }
+                },
+                {
+                    "wildcard": {
+                        "user_agent": {
+                            "wildcard": "*crawler*",
+                            "boost": 1
+                        }
+                    }
+                }
+            ],
+            "adjust_pure_negative": true,
+            "boost": 1
+        }
+    },
+    "aggregations": {
+        "domain": {
+            "terms": {
+                "field": "domain",
+                "size": 10,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [
+                    {
+                        "_count": "desc"
+                    },
+                    {
+                        "_key": "asc"
+                    }
+                ]
+            }
+        },
+        "ua": {
+            "terms": {
+                "field": "user_agent.keyword",
+                "size": 10,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [
+                    {
+                        "_count": "desc"
+                    },
+                    {
+                        "_key": "asc"
+                    }
+                ]
+            }
+        }
+    }
+}
